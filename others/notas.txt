@@ -1,0 +1,1 @@
+Este archivo contiene algunas notas para la clase de redes neuronales.

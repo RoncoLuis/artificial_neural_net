@@ -4,6 +4,7 @@ Aplicando CAP
 import pandas as pd
 import numpy as np
 from scripts import utils
+from CAP.algorithm_CAP import CAP
 
 iris_ds = pd.read_csv("../datasets/iris_plant/iris_plant.csv")
 #metodología en cascada
@@ -16,15 +17,9 @@ X = np.array(iris_ds[data])
 y = np.array(iris_ds[target])
 y_bin = utils.one_hot_encode(X_data=X,y_data=y,num_cols=2)
 
-# a partir de aqui comienza el alogoritmo CAP
-v_medio = np.mean(a=X,axis=0)
-x_translate = X - v_medio
-M = np.dot(y_bin.T,x_translate)
-res = np.dot(M,x_translate.T)
-res = res.T
-for index,row in enumerate(res):
-    max = res[index].max()
-    res[index] = np.where(row < max, 0, 1)
 #ingresando un nuevo patron que no estuvo en el entrenamiento
 z = np.array([5.2, 3.9, 1.2, 0.1])
-z_prim = z - v_medio
+
+cap = CAP(X_train=X,y_train_bin=y_bin)
+y_result = cap.recall()
+z_result = cap.recall_new(z)

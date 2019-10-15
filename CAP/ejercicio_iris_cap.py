@@ -21,4 +21,14 @@ for indice,col in enumerate(new_M):
     max = new_M[indice].max()
     new_M[indice]=np.where(col < max,0,1)
     #new_M[indice]=np.where(col == max, 1, col)
-
+# ========== segundo ejercicio ========== #
+#Este ejercicio me ayudo a contruir el algoritmo del cap
+# a partir de aqui comienza el alogoritmo CAP
+v_medio = np.mean(a=X,axis=0)
+x_translate = X - v_medio
+M = np.dot(y_bin.T,x_translate)
+res = np.dot(M,x_translate.T)
+res = res.T
+for index,row in enumerate(res):
+    max = res[index].max()
+    res[index] = np.where(row < max, 0, 1)

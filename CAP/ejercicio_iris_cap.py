@@ -19,5 +19,6 @@ new_M = np.array(new_M)
 #Recall convert
 for indice,col in enumerate(new_M):
     max = new_M[indice].max()
-    new_M[indice]=np.where(col < max,0,col)
-    new_M[indice]=np.where(col == max, 1, col)
+    new_M[indice]=np.where(col < max,0,1)
+    #new_M[indice]=np.where(col == max, 1, col)
+

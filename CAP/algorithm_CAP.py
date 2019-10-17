@@ -35,11 +35,10 @@ class CAP:
         M = self.calcula_memoria()
         v_medio = self.calcula_vmedio()
         z_translate = z - v_medio
-        z_result = np.dot(M, z_translate)
+        z_result = np.dot(M, z_translate.T)
         z_result = z_result.T
         for index, row in enumerate(z_result):
             max = z_result[index].max()
             z_result[index] = np.where(row < max, 0, 1)
-        print(z_result)
         return z_result
 

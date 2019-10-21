@@ -41,4 +41,3 @@ class CAP:
             max = z_result[index].max()
             z_result[index] = np.where(row < max, 0, 1)
         return z_result
-

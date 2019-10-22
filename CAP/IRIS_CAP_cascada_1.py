@@ -7,7 +7,6 @@ base de datos : iris plant
 """
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 from scripts import utils
 from CAP.algorithm_CAP import CAP
 from sklearn.model_selection import StratifiedKFold
@@ -31,7 +30,7 @@ table_mse_train = []
 table_mse_test = []
 for i in range(35):
 # ============= K-Folds ============= #
-    kfold = StratifiedKFold(n_splits=10,shuffle=True)
+    kfold = StratifiedKFold(n_splits=2,shuffle=True)
     #Este for se va ejecutar n_splits veces adentro debe ir el CAP
     score_train = []
     score_test = []
@@ -44,8 +43,8 @@ for i in range(35):
         #print("test",X_test.shape)
         cap = CAP(X_train=X_train,y_train_bin=y_train)
         y_train_pred = cap.recall()
-        correc_train = sum(y_train_pred == y_train)
-        score_train.append(correc_train/len(y_train_pred))
+        correct_train = sum(y_train_pred == y_train)
+        score_train.append(correct_train/len(y_train_pred))
         mse_train.append(mean_squared_error(y_train,y_train_pred))
         #print(confusion_matrix(utils.decode_onehot(y_train),utils.decode_onehot(y_train_pred)))
         #print("Precision or accuracy",precision_score(y_true=utils.decode_onehot(y_train),y_pred=utils.decode_onehot(y_train_pred)))
@@ -84,7 +83,7 @@ cap_table_mse_train = []
 cap_table_mse_test = []
 for i in range(35):
 # ============= K-Folds ============= #
-    cap_kfold = StratifiedKFold(n_splits=10,shuffle=True)
+    cap_kfold = StratifiedKFold(n_splits=2,shuffle=True)
     #Este for se va ejecutar n_splits veces adentro debe ir el CAP
     cap_score_train = []
     cap_score_test = []
@@ -108,3 +107,19 @@ for i in range(35):
     cap_table_score_test.append(cap_score_test)
     cap_table_mse_train.append(cap_mse_train)
     cap_table_mse_test.append(cap_mse_test)
+
+# ============= Exportando los resultados  ============= #
+#Exportando las tablas de resultados para el scrip de estadisticos
+def export_to_csv(X,filename,path="../datasets/iris_plant/resultados/"):
+    extension = ".csv"
+    X = pd.DataFrame(X)
+    X.to_csv(str(path+filename+extension),index=False)
+
+export_to_csv(table_score_test,filename="table_score_test")
+export_to_csv(table_score_train,filename="table_score_train")
+export_to_csv(table_mse_train,filename="table_mse_train")
+export_to_csv(table_mse_test,filename="table_mse_test")
+export_to_csv(cap_table_score_test,filename="cap_table_score_test")
+export_to_csv(cap_table_score_train,filename="cap_table_score_train")
+export_to_csv(cap_table_mse_train,filename="cap_table_mse_train")
+export_to_csv(cap_table_mse_test,filename="cap_table_mse_test")

@@ -7,10 +7,11 @@ base de datos : iris plant
 """
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 from scripts import utils
 from CAP.algorithm_CAP import CAP
 from sklearn.model_selection import StratifiedKFold
-from sklearn.metrics import  confusion_matrix,precision_score,recall_score,roc_curve,mean_squared_error
+from sklearn.metrics import confusion_matrix,precision_score,recall_score,roc_curve,mean_squared_error
 
 iris_ds = pd.read_csv("../datasets/iris_plant/iris_plant.csv")
 # ============= pre-procesamiento ============= #
@@ -23,7 +24,7 @@ target = iris_ds.columns.tolist()[-1]
 X = np.array(iris_ds[data])
 y = np.array(iris_ds[target])
 # ============= Setosa => [1,0,0] | virginica,versicolor => [0,1,0]
-y_bin = utils.one_hot_encode(X_data=X,y_data=y,num_cols=3)
+y_bin = utils.one_hot_encode(X_data=X,y_data=y,num_cols=2)
 table_score_train = []
 table_score_test = []
 table_mse_train = []
@@ -123,3 +124,27 @@ export_to_csv(cap_table_score_test,filename="cap_table_score_test")
 export_to_csv(cap_table_score_train,filename="cap_table_score_train")
 export_to_csv(cap_table_mse_train,filename="cap_table_mse_train")
 export_to_csv(cap_table_mse_test,filename="cap_table_mse_test")
+
+def convert_df(X,y,data):
+    X = pd.DataFrame(data=X, columns=data)
+    y = pd.DataFrame(data=utils.decode_onehot(y))
+    X["Variety"] = y
+    return X
+
+X_train= convert_df(X=X_train,y=y_train_pred,data=data)
+X_test = convert_df(X=X_test,y=y_pred ,data=data)
+
+setosa_train = X_train[X_train["Variety"] == 0]
+virgin_versi_train = X_train[X_train["Variety"] == 1]
+
+setosa_test = X_test[X_test["Variety"] == 0]
+virgin_versi_test = X_test[X_test["Variety"] == 1]
+
+cap_X_train = convert_df(X=cap_X_train,y=cap_y_train_pred ,data=data)
+cap_X_test  = convert_df(X=cap_X_test,y=cap_y_pred ,data=data)
+
+cap_versicolor_train = cap_X_train[cap_X_train["Variety"] == 0]
+cap_virginica_train = cap_X_train[cap_X_train["Variety"] == 1]
+
+cap_versicolor_test = cap_X_test[cap_X_test["Variety"] == 0]
+cap_virginica_test = cap_X_test[cap_X_test["Variety"] == 1]

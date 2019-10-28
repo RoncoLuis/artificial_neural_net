@@ -1,2 +1,0 @@
-Este archivo contiene algunas notas para la clase de redes neuronales.
-pag.263 lib_Friedman_PatterRecognition The McCulloch-Pitts Neuron

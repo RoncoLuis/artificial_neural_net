@@ -1,14 +1,14 @@
 from Evolucion_Diferencial.algorithm_DE import DE
+import matplotlib.pyplot as plt
 """
 inicializar algortimo de evolución diferencial
 @params
 Np      = Número de individuos
 Dim     = Dimensionalidad de la poblacion
-Cr      = Probabilidad de mutación
-F       = Operador de cruzamiento
-obj_fun = función objetivo (sphere,ackley,rosenbrock)
+Cr      = Operador de cruzamiento (Crossover Ratio)
+F       = Factor de Mutación
 """
-de = DE(Np=200,Dim=2,Cr=0.8,F=0.9,obj_fun="rosenbrock")
+de = DE(Np=20,Dim=5,Cr=0.8,F=0.9)
 """
 generando poblacion inicial
 @params
@@ -25,8 +25,12 @@ resultados
 @params
 pob_(name_function) = población inicial
 epochs              = generaciones
+obj_fun = función objetivo (sphere,ackley,rosenbrock)
 """
-result = de.DE_function(pob_init=pob_rosenbrock,epochs=100)
+v_result = de.DE_function(pob_init=pob_sphere,epochs=10000,obj_fun="sphere")
+
+
+
 
 
 

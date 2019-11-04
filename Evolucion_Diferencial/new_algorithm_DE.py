@@ -117,17 +117,23 @@ def main(cost_func, bounds, popsize, mutate, recombination, maxiter):
         print
         '         > BEST SOLUTION:', gen_sol, '\n'
 
-    return gen_sol
+    return v_trial
 
 
 # --- CONSTANTS ----------------------------------------------------------------+
 
 cost_func = func1  # Cost function
-bounds = [(-1, 1), (-1, 1),(-1, 1), (-1 , 1)]  # Bounds [(x1_min, x1_max), (x2_min, x2_max),...]
-popsize = 10  # Population size, must be >= 4
+Li = -1
+Ls = 1
+dim = 59
+bounds = []
+for i in range(dim):
+    bounds.append([Li,Ls])
+#bounds = [(-1, 1), (-1, 1),(-1, 1), (-1 , 1)]  # Bounds [(x1_min, x1_max), (x2_min, x2_max),...]
+popsize = 20  # Population size, must be >= 4
 mutate = 0.5  # Mutation factor [0,2]
 recombination = 0.7  # Recombination rate [0,1]
-maxiter = 20  # Max number of generations (maxiter)
+maxiter = 10000  # Max number of generations (maxiter)
 
 # --- RUN ----------------------------------------------------------------------+
 

@@ -4,10 +4,12 @@ import numpy as np
 from Evolucion_Diferencial.MLP_DE import MLP_DE
 from Evolucion_Diferencial.algorithm_DE import DE
 from scripts.utils import one_hot_encode, decode_onehot
-from sklearn.model_selection import StratifiedKFold,KFold
-from sklearn.metrics import accuracy_score,mean_squared_error
+from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import accuracy_score
+from sklearn.preprocessing import StandardScaler
 
 #========================= Dataset iris plant
+scaler = StandardScaler()
 '''Cargamos el conjunto de datos y lo dividimos en entradas y salidas'''
 database = 'iris plant'
 iris_ds = pd.read_csv("../datasets/iris_plant/iris_plant.csv")
@@ -19,45 +21,44 @@ target = iris_ds.columns.tolist()[-1]
 X = np.array(iris_ds[data])
 y = np.array(iris_ds[target])
 y_bin = one_hot_encode(X_data=X, y_data=y, num_cols=3)
+X_std = scaler.fit(X).transform(X)
 #========================= Fin pre-procesamiento iris plant
 
 #========================= Constantes Perceptron con Evolución diferencial
-Np = 20 #population
+Np = 30 #population
 Cr = 0.7 #crossover ratio
-F = 0.15 #mutacion
-Li = -1.14 #limite inferior
-Ls = 1.21 #limite superior
-De_generations = 100 #Generaciones evolucion diferencial
-mlp_DE = MLP_DE(input_neurons=X.shape[1], output_neurons=y_bin.shape[1])
-indexes = mlp_DE.calcula_indices()
-De_ = DE(Np=Np, Dim=indexes["dim"], Cr=Cr, F=F)
-best_population = []
-De_init_population = De_.generate_initial_pob(LI=Li, LS=Ls)
-weights = np.array(De_.DE_function(pob_init=De_init_population, generations=De_generations))
+F = 0.8 #mutacion
+Li = -10.0 #limite inferior
+Ls = 10.0 #limite superior
+generaciones = 1000 #Generaciones evolucion diferencial
 
-#obteniendo los mejores resultados
-for j in range(35):
-    print('===== experimento[', j, '] ===== ')
-    # separando la base de datos en numero de folds
-    kfold = StratifiedKFold(n_splits=3, shuffle=True)
-    for train_index, test_index in kfold.split(X, y):
-        #print("train index:", train_index, " test index:", test_index)
-        X_train, X_test, y_train, y_test = X[train_index], X[test_index], \
-                                           y_bin[train_index], y_bin[test_index]
+perceptron = MLP_DE(input_neurons=X.shape[1], output_neurons=y_bin.shape[1]) #inicializando objeto perceptron
+indices = perceptron.calcula_indices()
+evolucion_diferencial = DE(Np=Np, Dim=indices["dim"], Cr=Cr, F=F) #inicializando evolucion diferencial
 
-    for i in range(Np):
-        result_train = mlp_DE.train_model(X_train=X_train, y_train=y_train, DE_population=weights[i].reshape(1, -1))
-        acc = accuracy_score(y_true=decode_onehot(y_train),y_pred=decode_onehot(result_train))
-        error = mean_squared_error(y_true=decode_onehot(y_train),y_pred=decode_onehot(result_train))
-        if(acc > 0.6):
-            best_population.append(weights[i].reshape(1, -1))
-            print("iteracion",j,' en weights[', i, ']')
-            print("accuracy:", acc, " error:", error)
-            result_test = mlp_DE.train_model(X_train=X_test, y_train=y_test, DE_population=weights[i].reshape(1, -1))
-            acc_test = accuracy_score(y_true=decode_onehot(y_test), y_pred=decode_onehot(result_test))
-            error_test = mean_squared_error(y_true=decode_onehot(y_test), y_pred=decode_onehot(result_test))
-            if(acc_test > 0.6):
-                print("accuracy_test:", acc_test, " error_test:", error_test)
+padres = evolucion_diferencial.inicializacion(LI=Li,LS=Ls)
 
+#obteniendo 1er error de los primeros padres antes de entrar al algoritmo de evolucion diferencial
+error_en_padres = np.zeros((Np,1))
+for i in range(Np):
+    error_padres = evolucion_diferencial.fitness_error_mlp(MLP_object=perceptron,X=X, y=y_bin, weights=padres[i].reshape(1,-1))
+    error_en_padres[i] = error_padres
 
+error_en_crossover = np.zeros((Np,1))
+
+aux = 0
+while(aux <= generaciones):
+    mutado = evolucion_diferencial.mutacion(padres)
+    crossover = evolucion_diferencial.recombinacion(padres,mutado)
+
+    for i in range(crossover.shape[0]):
+        error_crossover = evolucion_diferencial.fitness_error_mlp(MLP_object=perceptron,X=X, y=y_bin, weights=crossover[i].reshape(1,-1))
+        error_en_crossover[i] = error_crossover
+
+    padres,error_en_padres = evolucion_diferencial.seleccion(padres,error_en_padres,crossover,error_en_crossover)
+    #for j in range(Np):
+    aux += 1
+
+prediction = perceptron.train_model(X_train=X, y_train=y_bin, DE_population=padres[error_en_padres.argmin()].reshape(1, -1))
+print(accuracy_score(y, decode_onehot(prediction)))
 

@@ -3,8 +3,7 @@ Luis Ronquillo
 Perceptrón multicapa usando DE
 """
 import numpy as np
-from scripts.utils import sigmoid_fun
-from sklearn.metrics import accuracy_score,mean_squared_error
+from sklearn.metrics import mean_squared_error
 
 class MLP_DE :
     def __init__(self, input_neurons, output_neurons):
@@ -17,12 +16,12 @@ class MLP_DE :
 
     def train_model(self, X_train, y_train, DE_population):
         indices_DE = self.calcula_indices()
-        #Ajustando vector de entrada añadiendio columna bias a X_train
+
         self.Vij = np.array(DE_population[0, 0:indices_DE["vij"]])
         self.bij = np.array(DE_population[0, indices_DE["vij"]:indices_DE["bij"]])
         self.Wjk = np.array(DE_population[0, indices_DE["bij"]:indices_DE["wjk"]])
         self.bjk = np.array(DE_population[0, indices_DE["wjk"]:indices_DE["bjk"]])
-        #reshape de los pesos
+
         self.Vij = self.Vij.reshape(indices_DE["input_layer"],indices_DE["hidden_layer"])
         self.bij = self.bij.reshape(1, indices_DE["hidden_layer"])
         self.Wjk = self.Wjk.reshape(indices_DE["hidden_layer"],indices_DE["output_layer"])
@@ -31,12 +30,14 @@ class MLP_DE :
         # ============ capa entrada-oculta ============
         input_to_hidden = np.dot(self.Vij.T, X_train.T)
         input_to_hidden_bias = input_to_hidden.T + self.bij
-        input_to_hidden_sigmoid = sigmoid_fun(input_to_hidden_bias)
+        input_to_hidden_sigmoid = self.sigmoid(input_to_hidden_bias)
         # ============ capa oculta-salida ============
         hidden_to_output = np.dot(input_to_hidden_sigmoid, self.Wjk)
         hidden_to_output_bias = hidden_to_output+self.bjk
-        output = sigmoid_fun(hidden_to_output_bias)
+        output = self.sigmoid(hidden_to_output_bias)
+
         return output
+
 
     def calcula_indices(self):
         input_neurons = self.input_layer
@@ -58,3 +59,5 @@ class MLP_DE :
         }
         return index_dict
 
+    def sigmoid(self,x):
+        return 1 / (1 + np.exp(-x))

@@ -1,9 +1,8 @@
 """
 Luis Ronquillo
-Perceptrón multicapa usando DE
+Perceptrón multicapa usando Evolucion Diferencial
 """
 import numpy as np
-from sklearn.metrics import mean_squared_error
 
 class MLP_DE :
     def __init__(self, input_neurons, output_neurons):

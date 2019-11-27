@@ -1,4 +1,5 @@
 """
+OBSOLETO
 Luis Ronquillo
 algoritmo tomado de:
 https://github.com/zhaozhiyong1989/Differential-Evolution/blob/master/DE.py

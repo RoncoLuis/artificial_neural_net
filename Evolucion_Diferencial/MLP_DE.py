@@ -58,5 +58,25 @@ class MLP_DE :
         }
         return index_dict
 
+    def indices_sinbias(self):
+        """
+        :return: retorna los indices para arquitectura
+        de una capa oculta
+        """
+        input_neurons = self.input_layer
+        hidden_layer = ((self.input_layer*2)-1)
+        output_neurons = self.output_layer
+        vij = input_neurons*hidden_layer
+        wjk = hidden_layer*output_neurons
+        index_dict = {
+            "input_layer": input_neurons,
+            "hidden_layer": hidden_layer,
+            "output_layer": output_neurons,
+            "vij": vij,
+            "wjk": vij+wjk,
+            "dim": vij+wjk
+        }
+        return index_dict
+
     def sigmoid(self,x):
         return 1 / (1 + np.exp(-x))

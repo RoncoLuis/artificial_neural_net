@@ -4,10 +4,17 @@ algoritmo de evolución diferencial
 """
 import numpy as np
 from math import sqrt
+from sklearn.metrics import mean_squared_error
 
 
 class DE:
-    def __init__(self, Np, Dim, Cr=0.8, F=0.5):
+    def __init__(self, Np, Dim, Cr=0.8, F=0.9):
+        """
+        :param Np: tamaño de la poblacion
+        :param Dim: dimensionalidad
+        :param Cr:  factor de cruza
+        :param F:  factor de mutacion
+        """
         self.Np = Np
         self.Dim = Dim
         self.Cr = Cr
@@ -32,8 +39,8 @@ class DE:
                 r3 = np.random.randint(0, m - 1)
 
             for j in range(n):
-                vector_mutado[i, j] = vector_objetivo[r1, j] + self.F * (
-                            vector_objetivo[r2, j] - vector_objetivo[r3, j])
+                vector_mutado[i, j] = vector_objetivo[r1, j] +\
+                                      self.F *(vector_objetivo[r2, j] - vector_objetivo[r3, j])
 
         return vector_mutado
 
@@ -66,9 +73,13 @@ class DE:
             fitness += X[i] * X[i]
         return fitness
 
-    def fitness_error_mlp(self, MLP_object, X, y, weights):
-        error = MLP_object.train_model(X_train=X, y_train=y, DE_population=weights)
-        return sum(sum(0.5 * (y - error) ** 2))
+    def fitness_error_mlp(self, MLP_object, X, y_real, weights):
+        y_predict = MLP_object.train_model(X_train=X, y_train=y_real, DE_population=weights)
+        return sum(sum(0.5 * (y_real - y_predict) ** 2))
+
+    def fitness_error_srm(self,SRM_object,x_train,y_train,weight,delay):
+        TF = SRM_object.srm_train_test(x_train,y_train,weight,delay)
+        return mean_squared_error(y_true=y_train,y_pred=TF)
 
     # TODO funcion fitness para algoritmo LIF
     def fitness_LIF(self, AFR, SDFR):

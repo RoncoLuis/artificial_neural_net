@@ -22,11 +22,22 @@ class SRM:
         self.ts_final = ts_final
 
     def temp_coding(self, x, M, m):
+        """
+        temporal enconding: convierte los elementos de X a señales de entrada
+        :param x: elemento original del dataset
+        :param M: elemento mayor por caracteristica
+        :param m: elemento menor por caracteristica
+        :return:  elemento convertido a señal
+        """
         r = M-m
         yf = (self.b-self.a)/r * x + (self.a*M)-(self.b*m)/r
         return yf
 
     def one_dimensional_encoding(self,x):
+        """
+        :param x: dataset original
+        :return:  dataset convertido a señal
+        """
         M,m = self.ranges_per_column(x)
         fila, columna = x.shape[0], x.shape[1]
         conversion = np.zeros(shape=(fila, columna))
@@ -36,11 +47,23 @@ class SRM:
         return conversion
 
     def ranges_per_column(self,x):
+        """
+        Obtener los rangos por columnas
+        :param x: dataset original
+        :return:  valores Maximos y minimos por columna (M,m)
+        """
         M = np.max(x,axis=0)
         m = np.min(x,axis=0)
         return M,m
 
     def srm_train_test(self,x_data,y_data,weight,delay):
+        """
+        :param x_data: dataset de entrenamiento o prueba
+        :param y_data: targets del dataset
+        :param weight: vector de pesos
+        :param delay:  vector de retrasos
+        :return: tiempo de disparo de cada uno
+        """
         clases = np.unique(y_data)
         ts = np.arange(self.ts_inicial, self.ts_final, 1)  # tiempo de simulacion
         TF = [] #tiempo de disparo
@@ -51,11 +74,9 @@ class SRM:
                     Yi=self.calula_yi(t=t,ti=ti,di=delay)
                     Vt = np.dot(weight,Yi.T)
                     if Vt >= self.threshold:
-                        # print(t)
                         TF.append(t)
                         break
                     if t >= ts[-1]:
-                        # print(1000)
                         TF.append(1000)
         return np.array(TF)
 
@@ -69,6 +90,11 @@ class SRM:
         return (t-ti-di)/self.tau * np.exp(1-((t-ti-di)/self.tau))
 
     def re_asing_y_pred(self,y_predicted):
+        """
+
+        :param y_predicted:
+        :return:
+        """
         y_predicted = np.where(y_predicted == 10,12, y_predicted)
         y_predicted = np.where(y_predicted == 11,12, y_predicted)
         y_predicted = np.where(y_predicted == 13,15, y_predicted)

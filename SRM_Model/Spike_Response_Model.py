@@ -91,14 +91,15 @@ class SRM:
 
     def re_asing_y_pred(self,y_predicted):
         """
-
         :param y_predicted:
         :return:
         """
         y_predicted = np.where(y_predicted == 10,12, y_predicted)
         y_predicted = np.where(y_predicted == 11,12, y_predicted)
-        y_predicted = np.where(y_predicted == 13,15, y_predicted)
+        y_predicted = np.where(y_predicted == 13,12, y_predicted)
         y_predicted = np.where(y_predicted == 14,15, y_predicted)
-        y_predicted = np.where(y_predicted == 16,18, y_predicted)
+        y_predicted = np.where(y_predicted == 16,15, y_predicted)
         y_predicted = np.where(y_predicted == 17,18, y_predicted)
+        y_predicted = np.where(y_predicted == 19,18, y_predicted)
+        y_predicted = np.where(y_predicted == 20,18, y_predicted)
         return y_predicted
